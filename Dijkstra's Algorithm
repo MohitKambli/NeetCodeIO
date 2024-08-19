@@ -1,0 +1,37 @@
+class Solution {
+    public Map<Integer, Integer> shortestPath(int n, List<List<Integer>> edges, int src) {
+        Map<Integer, List<int[]>> map = new HashMap<>();
+        for(List<Integer> arr : edges) {
+            int u = arr.get(0);
+            int v = arr.get(1);
+            int cost = arr.get(2);
+            if(!map.containsKey(u))
+                map.put(u, new ArrayList<>());
+            map.get(u).add(new int[]{v, cost});
+        }
+        PriorityQueue<int[]> heap = new PriorityQueue<>((a, b) -> Integer.compare(a[1], b[1]));
+        heap.add(new int[]{src, 0});
+        Map<Integer, Integer> ans = new HashMap<>();
+        for(int i=0;i<n;i++)
+            ans.put(i, Integer.MAX_VALUE);
+        ans.put(src, 0);
+        while(!heap.isEmpty()) {
+            int[] pair = heap.poll();
+            int node = pair[0], cost = pair[1];
+            if(map.get(node) != null) {
+                for(int[] p : map.get(node)) {
+                    int adjNode = p[0];
+                    int adjCost = p[1];
+                    if(cost + adjCost < ans.get(adjNode)) {
+                        ans.put(adjNode, cost + adjCost);
+                        heap.add(new int[]{adjNode, cost + adjCost});
+                    }
+                }
+            }
+        }
+        for(Map.Entry<Integer, Integer> entry : ans.entrySet())
+            if(entry.getValue() == Integer.MAX_VALUE)
+                ans.put(entry.getKey(), -1);
+        return ans;
+    }  
+}
